@@ -1,14 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const crud = require('../controller/cruds');
-const { validateGenre } = require('../models/genre');
+
+const mongoose = require('mongoose');
+const { validateGenre, Genre } = require('../models/genre');
+
+mongoose.connect('mongodb://localhost/vidly', {useNewUrlParser: true})
+    .then(console.log('Connected successfullly to DB from inside : handler_genres.js'))
+    .catch(err => console.log('Error in connecting to DB from inside : handler_genres.js'));
 
 router.get('/', async (req, res) => {
     // Send list of all the genres.
-    // res.send(genres);
-    const genres = await crud.getGenres();
+
+    const genres = await Genre.find();
     if (genres.length == 0)
         return res.status(404).send('No records on DB');
+
     res.send(genres);
 });
 
@@ -16,8 +22,7 @@ router.get('/:id', async (req, res) => {
     // Send the requested genre
 
     // Check if the genre is present and then store it on genre
-    // const genre = genres.find(c => c.id === parseInt(req.params.id));
-    const genre = await crud.addGenre(req.params.id);
+    const genre = await Genre.findById(req.params.id);
 
     // If requested genre is not present
     if (!genre) return res.status(404).send('Object not found.');
@@ -36,38 +41,28 @@ router.post('/', async (req, res) => {
     if (error)
         return res.status(400).send(error[0].message);
 
-    // Create an object for the new genre
-    genre = {
-        name: req.body.name,
-    };
-
     // Add the new genre to the genres list maintained at the top
-    // genres.push(genre);
-    const result = await crud.addGenre(genre);
+    const genre = new Genre({
+        name: req.body.name
+    });
+    const result = await genre.save();
 
     // Send the genre back
     res.send(result);
 });
 
 router.put('/:id', async (req, res) => {
-    // Update the requested genre
+    const { error } = validateGenre(req.body);
+    
+    if (error)
+        return res.status(400).send(error.message);
 
-    // Check if the genre is present in the genres list
-    const genre = crud.getGenre(id);
+    // Check if the genre is present in the genres list and update
+    const genre = await Genre.findByIdAndUpdate(req.params.id, { $set: { name: req.body.name } }, { new: true });
 
     // If not present, return 404 (Object Not Found)
+    console.log(genre);
     if (!genre) return res.status(404).send('Object not found.');
-
-    // Validate the new content so sent for update
-    const { error } = validateGenre(req.body);
-
-    // If invalid, send 400 (Bad Request)
-    if (error)
-        return res.status(400).send(error[0].message);
-
-    // Update the fields.
-    // genre.name = req.body.name;
-
 
     // Send the updated genre back
     res.send(genre);
@@ -77,7 +72,7 @@ router.delete('/:id', async (req, res) => {
     // Delete the specified genre if present
 
     // Retrieve the genre
-    const genre = await crud.deleteGenre(req.params.id);
+    const genre = await Genre.findOneAndDelete(req.params.id);
 
     // If genre not present, return 404 (Object Not Found)
     if (!genre) return res.status(404).send('Object not found.');
