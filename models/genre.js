@@ -7,7 +7,7 @@ const genreSchema = new mongoose.Schema({
         required: true,
         minlength: 3,
         maxlength: 50,
-        unique: true,
+        // unique: true,
         match : new RegExp('^[a-bA-Z][a-zA-Z ]*$')
     }
 });
