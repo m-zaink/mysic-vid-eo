@@ -4,9 +4,9 @@ const helmet = require('helmet');
 const startup = require('debug')('startup-log');
 
 const home = require('./routes/landing');
-const genres = require('./routes/handler_genres');
-const customers = require('./routes/handler_customers');
-const movies = require('./routes/handler_movies');
+const genres = require('./routes/genres');
+const customers = require('./routes/customers');
+const movies = require('./routes/movies');
 
 // ---------- Basic Setup -------------
 const app = express();
