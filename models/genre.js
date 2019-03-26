@@ -5,8 +5,10 @@ const Genre = mongoose.model('Genre', new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        minlength: 5,
+        minlength: 3,
         maxlength: 50,
+        unique: true,
+        match : new RegExp('^[a-bA-Z][a-zA-Z ]*$')
     }
 }));
 
@@ -15,9 +17,8 @@ function validateGenre(genre) {
         // Check if the name field :
         // 1. Is a string
         // 2. Has atleast 3 characters
-        // 3. Is not empty
-        name: Joi.string().min(5).max(50).required(),
-        movies: Joi.array().min(1)
+        // 3. Is not empty and matches the given RegExp
+        name: Joi.string().min(3).max(50).required().match(new RegExp('^[a-bA-Z][a-zA-Z ]*$'))
     });
 }
 
