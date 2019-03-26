@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Joi = require('joi');
 
-const Genre = mongoose.model('Genre', new mongoose.Schema({
+const genreSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -10,7 +10,9 @@ const Genre = mongoose.model('Genre', new mongoose.Schema({
         unique: true,
         match : new RegExp('^[a-bA-Z][a-zA-Z ]*$')
     }
-}));
+});
+
+const Genre = mongoose.model('Genre', genreSchema);
 
 function validateGenre(genre) {
     return Joi.validate(genre, {
@@ -24,3 +26,4 @@ function validateGenre(genre) {
 
 exports.Genre = Genre;
 exports.validateGenre = validateGenre;
+exports.genreSchema = genreSchema;
