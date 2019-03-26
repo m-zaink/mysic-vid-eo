@@ -7,7 +7,7 @@ function validateMovie(movie) {
     title: Joi.string()
       .required()
       .min(1),
-    genre: Joi.required().string(),
+    genre: Joi.string().required(),
     numberInStock: Joi.number()
       .min(0)
       .max(100),
