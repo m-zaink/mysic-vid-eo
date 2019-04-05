@@ -7,8 +7,8 @@ const genreSchema = new mongoose.Schema({
         required: true,
         minlength: 3,
         maxlength: 50,
-        // unique: true,
-        match : new RegExp('^[a-bA-Z][a-zA-Z ]*$')
+        unique: true,
+        match : new RegExp('^[a-bA-Z\-][a-zA-Z \-]*$')
     }
 });
 
@@ -20,7 +20,7 @@ function validateGenre(genre) {
         // 1. Is a string
         // 2. Has atleast 3 characters
         // 3. Is not empty and matches the given RegExp
-        name: Joi.string().min(3).max(50).required().regex(new RegExp('^[a-bA-Z][a-zA-Z ]*$'))
+        name: Joi.string().min(3).max(50).required().regex(new RegExp('^[a-bA-Z\-][a-zA-Z \-]*$'))
     });
 }
 
