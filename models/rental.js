@@ -12,7 +12,7 @@ const Rental = mongoose.model(
 					minlength: 3,
 					maxlength: 50
 				},
-				isGold: {
+				premium: {
 					type: Boolean,
 					default: false
 				},
