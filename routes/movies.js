@@ -1,17 +1,9 @@
 const _ = require('lodash');
 const Joi = require('joi');
-const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const { validateMovie, Movie } = require('../models/movie');
 const { Genre } = require('../models/genre');
-
-mongoose
-	.connect('mongodb://localhost/vidly', { useNewUrlParser: true })
-	.then(console.log('Connected successfullly to DB from inside : movies.js'))
-	.catch(err =>
-		console.log('Error in connecting to DB from inside : movies.js')
-	);
 
 router.get('/', async (req, res) => {
 	const movies = await Movie.find()
@@ -27,7 +19,7 @@ router.get('/:id', async (req, res) => {
 	try {
 		// Search for the movie
 		const movie = await Movie.findById(req.params.id)
-			.populate('Gerne', 'name')
+			.populate('Genre', 'name')
 			.select('-__v');
 		// If movie  is found
 		res.send(movie);
@@ -40,19 +32,21 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
 	const { error } = validateMovie(req.body);
 	if (error) return res.status(400).send(error.message);
+
 	try {
-		const genre = await Genre.findById(req.body.genre);
 		const rb = req.body;
+		const genre = await Genre.findById(rb.genre);
 		const movie = new Movie({
 			title: rb.title,
 			genre: {
 				_id: genre._id,
 				name: genre.name
 			},
-			numberInStock: rb.numberInStock ? rb.numberInStock : 0,
-			dailyRentalRate: rb.dailyRentalRate ? rb.dailyRentalRate : 4
+			numberInStock: rb.numberInStock,
+			dailyRentalRate: rb.dailyRentalRate
 		});
 		const result = await movie.save();
+		
 		res.send(
 			_.pick(result, [
 				'title',
